@@ -1,0 +1,1 @@
+# Core Backend - Gerenciador Financeiro
