@@ -3,6 +3,9 @@ package com.adrielle.corefinancas.entities;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.util.List;
 
 @Entity
@@ -21,7 +24,8 @@ public class User {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     // Relacionamento: Um Usuário tem Várias Contas (Cai muito em prova!)
