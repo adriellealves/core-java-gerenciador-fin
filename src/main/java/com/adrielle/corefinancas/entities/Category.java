@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -32,7 +34,8 @@ public class Category {
     @Column(name = "color_hex", length = 7)
     private String colorHex;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     public Category() {}

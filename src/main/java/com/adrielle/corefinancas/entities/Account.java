@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
 @Table(name = "accounts")
 public class Account {
@@ -29,7 +31,8 @@ public class Account {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     public Account() {}
@@ -55,6 +58,7 @@ public class Account {
         return balance;
     }
 
+    
     public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
