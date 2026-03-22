@@ -6,6 +6,9 @@ import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import java.util.List;
 
 @Entity
@@ -29,6 +32,7 @@ public class User {
     private OffsetDateTime createdAt;
 
     // Relacionamento: Um Usuário tem Várias Contas (Cai muito em prova!)
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Account> accounts;
 
