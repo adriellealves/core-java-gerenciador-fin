@@ -5,10 +5,13 @@ import com.adrielle.corefinancas.entities.Account;
 import com.adrielle.corefinancas.entities.Category;
 import com.adrielle.corefinancas.entities.Transaction;
 import com.adrielle.corefinancas.entities.User;
+import com.adrielle.corefinancas.enums.TransactionType;
+import com.adrielle.corefinancas.enums.TransactionStatus;
 import com.adrielle.corefinancas.repositories.AccountRepository;
 import com.adrielle.corefinancas.repositories.CategoryRepository;
 import com.adrielle.corefinancas.repositories.TransactionRepository;
 import com.adrielle.corefinancas.repositories.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,6 +54,22 @@ public class TransactionService {
         transaction.setDescription(dto.description());
         transaction.setTransactionDate(dto.transactionDate());
         transaction.setStatus(dto.status());
+
+        // --- INÍCIO DA NOVA REGRA DE NEGÓCIO (CÁLCULO DE SALDO) ---
+        // Vamos alterar o saldo da conta APENAS se a transação já estiver PAGA (PAID)
+
+        if (transaction.getStatus() == TransactionStatus.PAID) {
+            if (transaction.getType() == TransactionType.INCOME) {
+                // Se for Receita, SOMAMOS (+)
+                account.setBalance(account.getBalance().add(transaction.getAmount()));
+            } else if (transaction.getType() == TransactionType.EXPENSE) {
+                // Se for Despesa, SUBTRAÍMOS (-)
+                account.setBalance(account.getBalance().subtract(transaction.getAmount()));
+            }
+            // Salva o novo saldo da conta no banco de dados
+            accountRepository.save(account);
+        }
+        // --- FIM DA REGRA DE NEGÓCIO ---
 
         // 3. Salva no banco
         return transactionRepository.save(transaction);
