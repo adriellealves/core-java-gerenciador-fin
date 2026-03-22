@@ -1,6 +1,7 @@
 package com.adrielle.corefinancas.controllers;
 
 import com.adrielle.corefinancas.dtos.CategoryRequestDTO;
+import com.adrielle.corefinancas.dtos.CategoryResponseDTO;
 import com.adrielle.corefinancas.entities.Category;
 import com.adrielle.corefinancas.services.CategoryService;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,15 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody CategoryRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(dto));
+    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO dto) {
+        Category savedCategory = categoryService.createCategory(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(new CategoryResponseDTO(savedCategory));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequestDTO dto) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, dto));
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequestDTO dto) {
+        Category updatedCategory = categoryService.updateCategory(id, dto);
+        return ResponseEntity.ok(new CategoryResponseDTO(updatedCategory));
     }
 
     @DeleteMapping("/{id}")

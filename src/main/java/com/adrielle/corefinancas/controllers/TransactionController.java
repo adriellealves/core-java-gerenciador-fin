@@ -1,6 +1,7 @@
 package com.adrielle.corefinancas.controllers;
 
 import com.adrielle.corefinancas.dtos.TransactionRequestDTO;
+import com.adrielle.corefinancas.dtos.TransactionResponseDTO;
 import com.adrielle.corefinancas.entities.Transaction;
 import com.adrielle.corefinancas.services.TransactionService;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,14 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@RequestBody TransactionRequestDTO dto) {
+    public ResponseEntity<TransactionResponseDTO> createTransaction(@RequestBody TransactionRequestDTO dto) {
+        // O Service continua devolvendo a Entidade
         Transaction savedTransaction = transactionService.createTransaction(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+        
+        // Nós convertemos para o DTO limpo
+        TransactionResponseDTO response = new TransactionResponseDTO(savedTransaction);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/user/{userId}")
