@@ -1,7 +1,7 @@
 package com.adrielle.corefinancas.dtos;
 
 import com.adrielle.corefinancas.enums.CategoryType;
-import com.adrielle.corefinancas.entities.Category;
+
 import java.util.UUID;
 
 public record CategoryResponseDTO(

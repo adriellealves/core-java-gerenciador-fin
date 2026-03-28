@@ -7,6 +7,7 @@ import com.adrielle.corefinancas.repositories.CategoryRepository;
 import com.adrielle.corefinancas.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -69,5 +70,15 @@ public class CategoryService {
             throw new RuntimeException("Categoria não encontrada!");
         }
         categoryRepository.deleteById(categoryId);
+    }
+
+    // 4. LISTAR TODAS
+    public List<Category> findAllCategories() {
+        return categoryRepository.findAll();
+    }
+
+    // 5. LISTAR POR USUÁRIO
+    public List<Category> findCategoriesByUser(UUID userId) {
+        return categoryRepository.findByUserId(userId);
     }
 }
