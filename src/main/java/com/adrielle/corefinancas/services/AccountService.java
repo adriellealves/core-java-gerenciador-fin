@@ -1,6 +1,7 @@
 package com.adrielle.corefinancas.services;
 
 import com.adrielle.corefinancas.dtos.AccountCreateDTO;
+import com.adrielle.corefinancas.dtos.AccountUpdateDTO;
 import com.adrielle.corefinancas.entities.Account;
 import com.adrielle.corefinancas.entities.User;
 import com.adrielle.corefinancas.repositories.AccountRepository;
@@ -32,6 +33,7 @@ public class AccountService {
         newAccount.setUser(user);
         newAccount.setName(dto.name());
         newAccount.setType(dto.type());
+        newAccount.setActive(true);
         
         // Se o front-end não mandar saldo, começa com zero por padrão
         newAccount.setBalance(dto.balance() != null ? dto.balance() : BigDecimal.ZERO);
@@ -41,6 +43,42 @@ public class AccountService {
 
     // Regra 2: Listar as Contas de um Utilizador
     public List<Account> findAccountsByUser(UUID userId) {
-        return accountRepository.findByUserId(userId);
+        return accountRepository.findByUserIdAndActiveTrue(userId);
+    }
+
+    // Regra 3: Editar Conta
+    public Account updateAccount(UUID accountId, AccountUpdateDTO dto) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada!"));
+
+        if (dto.name() != null) {
+            account.setName(dto.name());
+        }
+        if (dto.type() != null) {
+            account.setType(dto.type());
+        }
+        if (dto.balance() != null) {
+            account.setBalance(dto.balance());
+        }
+
+        return accountRepository.save(account);
+    }
+
+    // Regra 4: Inativar Conta (soft delete)
+    public Account inactivateAccount(UUID accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada!"));
+
+        account.setActive(false);
+        return accountRepository.save(account);
+    }
+
+    // Regra 5: Reativar Conta
+    public Account reactivateAccount(UUID accountId) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada!"));
+
+        account.setActive(true);
+        return accountRepository.save(account);
     }
 }

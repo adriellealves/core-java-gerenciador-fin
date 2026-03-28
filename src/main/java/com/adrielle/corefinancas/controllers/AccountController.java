@@ -2,6 +2,7 @@ package com.adrielle.corefinancas.controllers;
 
 import com.adrielle.corefinancas.dtos.AccountCreateDTO;
 import com.adrielle.corefinancas.dtos.AccountResponseDTO;
+import com.adrielle.corefinancas.dtos.AccountUpdateDTO;
 import com.adrielle.corefinancas.entities.Account;
 import com.adrielle.corefinancas.services.AccountService;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,13 @@ public class AccountController {
         Account savedAccount = accountService.createAccount(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AccountResponseDTO(savedAccount));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AccountResponseDTO> updateAccount(@PathVariable UUID id, @RequestBody AccountUpdateDTO dto) {
+        Account updatedAccount = accountService.updateAccount(id, dto);
+        return ResponseEntity.ok(new AccountResponseDTO(updatedAccount));
+    }
+
     // Endpoint para listar as contas (Ex: GET /api/accounts/user/123e4567-e89b-12d3...)
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<AccountResponseDTO>> getUserAccounts(@PathVariable UUID userId) {
@@ -37,5 +45,17 @@ public class AccountController {
                 .toList();
                 
         return ResponseEntity.ok(accounts);
+    }
+
+    @PatchMapping("/{id}/inactivate")
+    public ResponseEntity<AccountResponseDTO> inactivateAccount(@PathVariable UUID id) {
+        Account account = accountService.inactivateAccount(id);
+        return ResponseEntity.ok(new AccountResponseDTO(account));
+    }
+
+    @PatchMapping("/{id}/reactivate")
+    public ResponseEntity<AccountResponseDTO> reactivateAccount(@PathVariable UUID id) {
+        Account account = accountService.reactivateAccount(id);
+        return ResponseEntity.ok(new AccountResponseDTO(account));
     }
 }

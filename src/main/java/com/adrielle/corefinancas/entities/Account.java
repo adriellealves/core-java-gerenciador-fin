@@ -31,6 +31,9 @@ public class Account {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
@@ -63,6 +66,10 @@ public class Account {
         return createdAt;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
@@ -77,6 +84,10 @@ public class Account {
 
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
     
 }

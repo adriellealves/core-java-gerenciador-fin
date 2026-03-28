@@ -10,4 +10,6 @@ import java.util.UUID;
 public interface AccountRepository extends JpaRepository<Account, UUID> {
     // Traz todas as contas de um utilizador específico
     List<Account> findByUserId(UUID userId);
+
+    List<Account> findByUserIdAndActiveTrue(UUID userId);
 }
