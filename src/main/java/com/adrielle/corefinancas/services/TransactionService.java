@@ -64,6 +64,11 @@ public class TransactionService {
                 account.setBalance(account.getBalance().add(transaction.getAmount()));
             } else if (transaction.getType() == TransactionType.EXPENSE) {
                 // Se for Despesa, SUBTRAÍMOS (-)
+                if (account.getBalance().compareTo(transaction.getAmount()) < 0) {
+                    throw new IllegalArgumentException("Saldo insuficiente na conta selecionada.");
+                
+                }
+                 // Se passou da validação, subtrai o saldo
                 account.setBalance(account.getBalance().subtract(transaction.getAmount()));
             }
             // Salva o novo saldo da conta no banco de dados
