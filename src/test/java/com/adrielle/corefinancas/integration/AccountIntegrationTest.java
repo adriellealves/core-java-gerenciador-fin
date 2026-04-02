@@ -4,7 +4,9 @@ import com.adrielle.corefinancas.dtos.AccountCreateDTO;
 import com.adrielle.corefinancas.entities.User;
 import com.adrielle.corefinancas.enums.AccountType;
 import com.adrielle.corefinancas.repositories.AccountRepository;
+import com.adrielle.corefinancas.repositories.CategoryRepository;
 import com.adrielle.corefinancas.repositories.UserRepository;
+import com.adrielle.corefinancas.repositories.TransactionRepository;
 import com.adrielle.corefinancas.security.TokenService;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,12 @@ class AccountIntegrationTest {
     @Autowired
     private AccountRepository accountRepository;
 
+        @Autowired
+        private CategoryRepository categoryRepository;
+
+        @Autowired
+        private TransactionRepository transactionRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -49,7 +57,9 @@ class AccountIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        accountRepository.deleteAll();
+                transactionRepository.deleteAllInBatch();
+                accountRepository.deleteAllInBatch();
+                categoryRepository.deleteAllInBatch();
         userRepository.deleteAll();
 
         testUser = new User();

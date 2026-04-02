@@ -1,0 +1,31 @@
+name: Main Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run tests and package
+        run: ./mvnw -B verify
+
+      - name: Upload application jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-financas-jar
+          path: target/*.jar
+          if-no-files-found: error

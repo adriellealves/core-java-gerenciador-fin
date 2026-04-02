@@ -83,6 +83,17 @@ http://localhost:8080/swagger-ui.html
    Authorization: Bearer <token>
    ```
 
+  ---
+
+  ## Esteira no GitHub Actions
+
+  O repositório já fica preparado para dois fluxos:
+
+  1. Versões abertas: qualquer `pull request` ou push em branch fora da `main` roda `./mvnw -B test` para validar a mudança antes do merge.
+  2. Versões fechadas: todo push na `main` roda `./mvnw -B verify`, gera o JAR e publica o artefato no GitHub Actions.
+
+  Se você quiser transformar a etapa da `main` em deploy para uma cloud específica, o próximo passo é adicionar um job de `deploy` nesse workflow e conectar os secrets do provedor escolhido.
+
 ---
 
 ## Endpoints da API
