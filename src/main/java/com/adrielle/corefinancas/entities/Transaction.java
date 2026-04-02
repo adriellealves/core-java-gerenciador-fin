@@ -59,7 +59,7 @@ public class Transaction {
     private boolean active = true;
 
     @CreationTimestamp
-    @Column(name = "created_at", insertable = true, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
     @UpdateTimestamp
