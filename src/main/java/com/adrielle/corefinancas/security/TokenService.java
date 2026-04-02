@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 @Service
 public class TokenService {
@@ -18,6 +18,9 @@ public class TokenService {
     // O Spring vai buscar aquela senha que colocamos no application.properties
     @Value("${api.security.token.secret}")
     private String secret;
+
+    @Value("${app.timezone:America/Sao_Paulo}")
+    private String timezone;
 
     public String generateToken(User user) {
         try {
@@ -52,6 +55,6 @@ public class TokenService {
     
     // Define que o token tem validade de 2 horas
     private Instant genExpirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        return LocalDateTime.now().plusHours(2).atZone(ZoneId.of(timezone)).toInstant();
     }
 }

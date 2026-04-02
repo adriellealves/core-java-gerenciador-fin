@@ -2,8 +2,16 @@ package com.adrielle.corefinancas.controllers;
 
 import com.adrielle.corefinancas.dtos.CategoryRequestDTO;
 import com.adrielle.corefinancas.dtos.CategoryResponseDTO;
+import com.adrielle.corefinancas.dtos.PagedResponseDTO;
 import com.adrielle.corefinancas.entities.Category;
+import com.adrielle.corefinancas.enums.CategoryType;
 import com.adrielle.corefinancas.services.CategoryService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +23,8 @@ import java.util.UUID;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
+
     private final CategoryService categoryService;
 
     public CategoryController(CategoryService categoryService) {
@@ -22,7 +32,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryRequestDTO dto) {
+    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryRequestDTO dto) {
+        log.info("Requisição para criar categoria: userId={}", dto.userId());
         Category savedCategory = categoryService.createCategory(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new CategoryResponseDTO(savedCategory));
     }
@@ -38,17 +49,22 @@ public class CategoryController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<CategoryResponseDTO>> getUserCategories(@PathVariable UUID userId) {
-        List<CategoryResponseDTO> categories = categoryService.findCategoriesByUser(userId)
-                .stream()
-                .map(CategoryResponseDTO::new)
-                .toList();
+    public ResponseEntity<PagedResponseDTO<CategoryResponseDTO>> getUserCategories(
+            @PathVariable UUID userId,
+            @RequestParam(required = false) CategoryType type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction) {
 
-        return ResponseEntity.ok(categories);
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        return ResponseEntity.ok(categoryService.findCategoriesByUser(userId, type, pageable));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable UUID id, @RequestBody CategoryRequestDTO dto) {
+    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable UUID id, @Valid @RequestBody CategoryRequestDTO dto) {
         Category updatedCategory = categoryService.updateCategory(id, dto);
         return ResponseEntity.ok(new CategoryResponseDTO(updatedCategory));
     }

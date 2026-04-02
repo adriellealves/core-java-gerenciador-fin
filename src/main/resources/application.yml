@@ -21,4 +21,7 @@ spring:
 api:
   security:
     token:
-      secret: "minha-chave-super-secreta-core-financas-123!"
+      secret: ${API_SECURITY_TOKEN_SECRET}
+
+app:
+  timezone: ${APP_TIMEZONE:America/Sao_Paulo}

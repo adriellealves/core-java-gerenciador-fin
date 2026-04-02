@@ -2,13 +2,19 @@ package com.adrielle.corefinancas.services;
 
 import com.adrielle.corefinancas.dtos.UserCreateDTO;
 import com.adrielle.corefinancas.entities.User;
+import com.adrielle.corefinancas.exceptions.DuplicateResourceException;
 import com.adrielle.corefinancas.repositories.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Service
 public class UserService {
+
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -19,10 +25,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public User createUser(UserCreateDTO dto) {
         // Verifica se o email já existe para não quebrar o banco
         if (userRepository.findByEmail(dto.email()).isPresent()) {
-            throw new RuntimeException("E-mail já está em uso!");
+            throw new DuplicateResourceException("E-mail já está em uso!");
         }
 
         User newUser = new User();
@@ -32,6 +39,8 @@ public class UserService {
         String encryptedPassword = passwordEncoder.encode(dto.password());
         newUser.setPasswordHash(encryptedPassword);// Encripta a senha antes de salvar
 
-        return userRepository.save(newUser);
+        User saved = userRepository.save(newUser);
+        log.info("Novo usuário criado: id={}, email={}", saved.getId(), saved.getEmail());
+        return saved;
     }
 }

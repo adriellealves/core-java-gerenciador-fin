@@ -3,18 +3,26 @@ package com.adrielle.corefinancas.controllers;
 import com.adrielle.corefinancas.dtos.AccountCreateDTO;
 import com.adrielle.corefinancas.dtos.AccountResponseDTO;
 import com.adrielle.corefinancas.dtos.AccountUpdateDTO;
+import com.adrielle.corefinancas.dtos.PagedResponseDTO;
 import com.adrielle.corefinancas.entities.Account;
 import com.adrielle.corefinancas.services.AccountService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
+
+    private static final Logger log = LoggerFactory.getLogger(AccountController.class);
 
     private final AccountService accountService;
 
@@ -24,7 +32,8 @@ public class AccountController {
 
     // Endpoint para criar a conta
     @PostMapping
-    public ResponseEntity<AccountResponseDTO> createAccount(@RequestBody AccountCreateDTO dto) {
+    public ResponseEntity<AccountResponseDTO> createAccount(@Valid @RequestBody AccountCreateDTO dto) {
+        log.info("Requisição para criar conta: userId={}", dto.userId());
         Account savedAccount = accountService.createAccount(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(new AccountResponseDTO(savedAccount));
     }
@@ -35,16 +44,19 @@ public class AccountController {
         return ResponseEntity.ok(new AccountResponseDTO(updatedAccount));
     }
 
-    // Endpoint para listar as contas (Ex: GET /api/accounts/user/123e4567-e89b-12d3...)
+    // Endpoint para listar as contas com paginação
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<AccountResponseDTO>> getUserAccounts(@PathVariable UUID userId) {
-        // Uso da API de Streams do Java (Cai muito em prova!)
-        List<AccountResponseDTO> accounts = accountService.findAccountsByUser(userId)
-                .stream()
-                .map(AccountResponseDTO::new) // Converte cada Entidade num DTO
-                .toList();
-                
-        return ResponseEntity.ok(accounts);
+    public ResponseEntity<PagedResponseDTO<AccountResponseDTO>> getUserAccounts(
+            @PathVariable UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sort,
+            @RequestParam(defaultValue = "desc") String direction) {
+
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        return ResponseEntity.ok(accountService.findAccountsByUser(userId, pageable));
     }
 
     @PatchMapping("/{id}/inactivate")
