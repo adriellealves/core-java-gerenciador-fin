@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Table(name = "transactions")
 public class Transaction {
@@ -52,8 +55,16 @@ public class Transaction {
     @Column(name = "reference_id")
     private UUID referenceId; // Usado para ligar transferências entre duas contas
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    @Column(nullable = false)
+    private boolean active = true;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
 
     public Transaction() {}
 
@@ -97,8 +108,16 @@ public class Transaction {
         return referenceId;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
     public OffsetDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setUser(User user) {
@@ -135,6 +154,10 @@ public class Transaction {
 
     public void setReferenceId(UUID referenceId) {
         this.referenceId = referenceId;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }

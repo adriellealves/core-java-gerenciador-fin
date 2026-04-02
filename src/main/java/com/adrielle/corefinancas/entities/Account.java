@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "accounts")
@@ -38,6 +39,10 @@ public class Account {
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
 
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
     public Account() {}
     // Gerar Getters e Setters!
 
@@ -64,6 +69,10 @@ public class Account {
     
     public OffsetDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public boolean isActive() {
