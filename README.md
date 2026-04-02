@@ -89,8 +89,12 @@ http://localhost:8080/swagger-ui.html
 
   O repositório já fica preparado para dois fluxos:
 
-  1. Versões abertas: qualquer `pull request` ou push em branch fora da `main` roda `./mvnw -B test` para validar a mudança antes do merge.
-  2. Versões fechadas: todo push na `main` roda `./mvnw -B verify`, gera o JAR e publica o artefato no GitHub Actions.
+  1. Versões abertas: qualquer `pull request` ou push em branch fora da `main` roda revisão de dependências, varredura de vulnerabilidades e `./mvnw -B clean verify` para validar build, testes, cobertura e empacotamento antes do merge.
+  2. Versões fechadas: todo push na `main` roda `./mvnw -B clean verify`, gera o JAR, publica o artefato no GitHub Actions e, se os secrets existirem, executa análise no Sonar com cobertura do JaCoCo.
+
+  Além disso, existe um workflow de CodeQL para análise estática do código Java na `main`, nos PRs para `main` e em execução agendada semanal.
+
+  Para ativar o Sonar, crie os secrets `SONAR_TOKEN`, `SONAR_PROJECT_KEY` e `SONAR_HOST_URL` no repositório.
 
   Se você quiser transformar a etapa da `main` em deploy para uma cloud específica, o próximo passo é adicionar um job de `deploy` nesse workflow e conectar os secrets do provedor escolhido.
 
