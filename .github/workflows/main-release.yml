@@ -1,0 +1,49 @@
+name: Main Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run tests and package
+        run: ./mvnw -B clean verify
+
+      - name: Upload application jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-financas-jar
+          path: target/*.jar
+          if-no-files-found: error
+
+      - name: Run Sonar analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ] && [ -n "$SONAR_PROJECT_KEY" ] && [ -n "$SONAR_HOST_URL" ]; then
+            ./mvnw -B sonar:sonar \
+              -Dsonar.projectKey="$SONAR_PROJECT_KEY" \
+              -Dsonar.host.url="$SONAR_HOST_URL" \
+              -Dsonar.token="$SONAR_TOKEN" \
+              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+          else
+            echo "Sonar secrets not configured; skipping analysis."
+          fi
