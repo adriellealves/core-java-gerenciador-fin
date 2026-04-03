@@ -87,7 +87,7 @@ class TransactionIntegrationTest {
                         .content(objectMapper.writeValueAsString(accountDto)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        accountId = UUID.fromString(objectMapper.readTree(accountResponse).get("id").asText());
+        accountId = UUID.fromString(objectMapper.readTree(accountResponse).get("id").textValue());
 
         // Create a category
         CategoryRequestDTO categoryDto = new CategoryRequestDTO(testUser.getId(), "Salário", CategoryType.INCOME, "#00FF00", null);
@@ -97,7 +97,7 @@ class TransactionIntegrationTest {
                         .content(objectMapper.writeValueAsString(categoryDto)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        categoryId = UUID.fromString(objectMapper.readTree(categoryResponse).get("id").asText());
+        categoryId = UUID.fromString(objectMapper.readTree(categoryResponse).get("id").textValue());
     }
 
     @Test

@@ -90,7 +90,7 @@ class CategoryIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        UUID parentId = UUID.fromString(objectMapper.readTree(parentResponse).get("id").asText());
+        UUID parentId = UUID.fromString(objectMapper.readTree(parentResponse).get("id").textValue());
 
         // Create subcategory
         CategoryRequestDTO subDto = new CategoryRequestDTO(testUser.getId(), "Restaurante", CategoryType.EXPENSE, "#FF0000", parentId);
@@ -113,7 +113,7 @@ class CategoryIntegrationTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        UUID categoryId = UUID.fromString(objectMapper.readTree(response).get("id").asText());
+        UUID categoryId = UUID.fromString(objectMapper.readTree(response).get("id").textValue());
 
         // Delete (soft delete)
         mockMvc.perform(delete("/api/categories/" + categoryId)

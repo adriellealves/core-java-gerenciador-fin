@@ -135,7 +135,7 @@ class AccountIntegrationTest {
                 .getResponse()
                 .getContentAsString();
 
-        String accountId = objectMapper.readTree(response).get("id").asText();
+        String accountId = objectMapper.readTree(response).get("id").textValue();
 
         mockMvc.perform(patch("/api/accounts/" + accountId + "/inactivate")
                         .header("Authorization", authToken))
